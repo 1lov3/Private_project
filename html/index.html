@@ -1,38 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- css style -->
-    <link rel="stylesheet" href="..//css/style.css">
+    <title>Time Status Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+        }
+        
+        .time-display {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        
+        .time-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 140px;
+            transition: all 0.2s ease;
+        }
+        
+        .time-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .time-format {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .time-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e40af;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .status-container {
+            position: relative;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px 20px 20px;
+            margin-top: 8px;
+        }
+        
+        .status-label {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #ffffff;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 0 8px;
+            letter-spacing: 0.3px;
+        }
+        
+        .status-message {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 8px 0;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-sleep {
+            color: #1e40af;
+            background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+        }
+        
+        .status-wake {
+            color: #dc2626;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+        }
+        
+        .status-active {
+            color: #059669;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+        
+        @media (max-width: 500px) {
+            .time-display {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .dashboard {
+                padding: 24px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- head section start -->
-    <header>
+    <div class="dashboard">
+        <h1 class="title">เวลา ณ ขณะนี้</h1>
+        
+        <div class="time-display">
+            <div class="time-card">
+                <div class="time-format">24 Hour</div>
+                <div class="time-value" id="time24h">00:00:00</div>
+            </div>
+            
+            <div class="time-card">
+                <div class="time-format">AM / PM</div>
+                <div class="time-value" id="time12h">12:00:00 AM</div>
+            </div>
+        </div>
+        
+        <div class="status-container">
+            <div class="status-label">สิ่งที่ควรทำ</div>
+            <div class="status-message" id="statusMessage">...</div>
+        </div>
+    </div>
 
-        <a href="#home" class="logo">1lovvvv</a>
-
-        <nav class="navbar">
-            <a href="home">Home</a>
-            <a href="store">store</a>
-            <a href="about us">about us</a>
-            <a href="contact">contact</a>
-        </nav>
-    </header>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- head section ends -->
+    <script>
+        const updateTimeAndStatus = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Update 24-hour format
+            const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('time24h').textContent = time24;
+            
+            // Update 12-hour format
+            const hours12 = hours % 12 || 12;
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const time12 = `${hours12}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+            document.getElementById('time12h').textContent = time12;
+            
+            // Update status based on time
+            const statusEl = document.getElementById('statusMessage');
+            
+            if ((hours >= 21) || (hours <= 3)) {
+                statusEl.textContent = 'ไปนอนเถอะ';
+                statusEl.className = 'status-message status-sleep';
+            } else if (hours >= 4 && hours <= 5) {
+                statusEl.textContent = 'ตื่นมาทำอะไร';
+                statusEl.className = 'status-message status-wake';
+            } else {
+                statusEl.textContent = 'ยังเช้าอยู่หาไรทำเถอะ';
+                statusEl.className = 'status-message status-active';
+            }
+        };
+        
+        // Initialize and update every second
+        updateTimeAndStatus();
+        setInterval(updateTimeAndStatus, 1000);
+    </script>
 </body>
 </html>
